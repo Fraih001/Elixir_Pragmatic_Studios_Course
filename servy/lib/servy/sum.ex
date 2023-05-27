@@ -23,5 +23,3 @@ defmodule Sum do
     current_list |> Enum.reverse()
   end
 end
-
-Sum.loopy([1, 2, 3, 4, 5], 0)
