@@ -18,11 +18,11 @@ defmodule Servy.Plugins do
     rewrite_path_captures(conv, captures)
   end
 
-  def rewrite_path_captures(%Conv{} = conv, %{"thing" => thing, "id" => id}) do
+  defp rewrite_path_captures(%Conv{} = conv, %{"thing" => thing, "id" => id}) do
     %{conv | path: "/#{thing}/#{id}"}
   end
 
-  def rewrite_path_captures(%Conv{} = conv, nil), do: conv
+  defp rewrite_path_captures(%Conv{} = conv, nil), do: conv
 
   def log(%Conv{} = conv), do: IO.inspect(conv)
 
