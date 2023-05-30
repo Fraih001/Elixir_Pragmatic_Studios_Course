@@ -24,13 +24,20 @@ defmodule Servy.Plugins do
 
   defp rewrite_path_captures(%Conv{} = conv, nil), do: conv
 
-  def log(%Conv{} = conv), do: IO.inspect(conv)
+  def log(%Conv{} = conv) do
+    if Mix.env == :dev do
+     IO.inspect(conv)
+    end
+    conv
+  end
 
   @doc """
   Logs 404 requests
   """
   def track(%Conv{status: 404, path: path} = conv) do
+    if Mix.env != :test do
     Logger.warn("We have a problem!")
+    end
     conv
   end
 
