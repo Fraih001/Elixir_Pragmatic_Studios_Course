@@ -26,22 +26,17 @@ defmodule Servy.Handler do
     |> format_response()
   end
 
-  def route(%Conv{ method: "GET", path: "/snapshots" } = conv) do
-    parent = self()
-    spawn(fn -> send(parent, {:result, VideoCam.get_snapshot("cam-1")}) end)
-    spawn(fn -> send(parent, {:result, VideoCam.get_snapshot("cam-2")}) end)
-    spawn(fn -> send(parent, {:result, VideoCam.get_snapshot("cam-3")}) end)
+  def route(%Conv{ method: "GET", path: "/sensors" } = conv) do
+    task = Task.async(Servy.Tracker, :get_location, ["bigfoot"])
 
-    snapshot1 = receive do {:result, filename} -> filename end
-    snapshot2 = receive do {:result, filename} -> filename end
-    snapshot3 = receive do {:result, filename} -> filename end
+    snapshots =
+    ["cam-1", "cam-2", "cam-3"]
+    |> Enum.map(&Task.async(fn -> VideoCam.get_snapshot(&1) end))
+    |> Enum.map(&Task.await/1)
 
-    # snapshot2 = spawn(fn -> VideoCam.get_snapshot("cam-2") end)
-    # snapshot3 = spawn(fn -> VideoCam.get_snapshot("cam-3") end)
+    where_is_bigfoot = Task.await(task)
 
-    snapshots = [snapshot1, snapshot2, snapshot3]
-
-    %{ conv | status: 200, resp_body: inspect snapshots}
+    %{ conv | status: 200, resp_body: inspect {snapshots, where_is_bigfoot}}
   end
 
   def route(%Conv{ method: "GET", path: "/hibernate/" <> time } = conv) do
