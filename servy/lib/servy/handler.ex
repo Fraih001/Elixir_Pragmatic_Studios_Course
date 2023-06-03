@@ -47,7 +47,6 @@ defmodule Servy.Handler do
 
     # %{ conv | status: 200, resp_body: inspect {snapshots, where_is_bigfoot}}
     render(conv, "sensors.eex", snapshots: snapshots, location: where_is_bigfoot)
-
   end
 
 
