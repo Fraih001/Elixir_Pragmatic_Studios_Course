@@ -17,6 +17,7 @@ defmodule Servy.Handler do
 
   def handle(request) do
     request
+    # |> IO.inspect()
     |> parse()
     |> rewrite_path()
     |> log()
@@ -25,6 +26,17 @@ defmodule Servy.Handler do
     |> track()
     |> put_content_length()
     |> format_response()
+  end
+
+
+  def route(%Conv{method: "GET", path: "/404s"} = conv) do
+    counts = Servy.FourOhFourCounter.get_counts()
+
+    %{ conv | status: 200, resp_body: inspect counts }
+  end
+
+  def route(%Conv{method: "GET", path: "/pledges/new"} = conv) do
+    Servy.PledgeController.new(conv)
   end
 
   def route(%Conv{method: "POST", path: "/pledges"} = conv) do
