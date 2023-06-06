@@ -7,11 +7,20 @@ defmodule Servy.PledgeServer do
     defstruct cache_size: 3, pledges: []
   end
 
+  # def child_spec(arg) do
+  #   %{
+  #     id: Servy.PledgeServer,
+  #     restart: :temporary,
+  #     start: {Servy.PledgeServer,
+  #      :start_link, [[]]}
+  #   }
+  # end
+
   # client interface functions
 
-  def start do
+  def start_link(_args) do
     IO.puts "Starting the pledge server..."
-    GenServer.start(__MODULE__, %State{}, name: @name)
+    GenServer.start_link(__MODULE__, %State{}, name: @name)
   end
 
   def create_pledge(name, amount) do
@@ -91,7 +100,7 @@ end
 
 alias Servy.PledgeServer
 
-{:ok, pid} = PledgeServer.start()
+{:ok, pid} = PledgeServer.start_link([])
 
 send pid, {:stop, "hammertime"}
 
